@@ -2,13 +2,22 @@
 conda env list
 #激活qiime2环境
 conda activate qiime2-amplicon-2025.4
-#进入目标文件夹
+#进入目标文件夹，将google数据保存于此文件夹下
  wd=/home/liancai/amplicon
  cd $wd
+ cp /mnt/e/16spractice/linux/atacama/sample-metadata.tsv .
  #创建学习目录
  mkdir -p emp-paired-end-sequences
- 
-cp /mnt/e/16spractice/linux/atacama/sample-metadata.tsv .
+# -c为支持断点续传，跨国下载经常断，-c必须加，否则如果下不完断线又要从头下载
+wget -c \
+  -O "emp-paired-end-sequences/forward.fastq.gz" \
+  "https://data.qiime2.org/2020.11/tutorials/atacama-soils/10p/forward.fastq.gz"
+wget -c \
+  -O "emp-paired-end-sequences/reverse.fastq.gz" \
+  "https://data.qiime2.org/2020.11/tutorials/atacama-soils/10p/reverse.fastq.gz"
+wget -c \
+  -O "emp-paired-end-sequences/barcodes.fastq.gz" \
+  "https://data.qiime2.org/2020.11/tutorials/atacama-soils/10p/barcodes.fastq.gz"
 #切换到上层文件夹
  wd=/home/liancai/amplicon
  cd $wd
