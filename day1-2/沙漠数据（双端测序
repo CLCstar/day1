@@ -1,0 +1,15 @@
+#查看qiime版本
+conda env list
+#激活qiime2环境
+conda activate qiime2-amplicon-2025.4
+#进入目标文件夹
+ wd=/home/liancai/amplicon
+ cd $wd
+ #创建学习目录
+ mkdir -p emp-paired-end-sequences
+ 
+cp /mnt/e/16spractice/linux/atacama/sample-metadata.tsv .
+#切换到上层文件夹
+ wd=/home/liancai/amplicon
+ cd $wd
+ 
