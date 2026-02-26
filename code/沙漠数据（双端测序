@@ -18,6 +18,7 @@ wget -c \
 wget -c \
   -O "emp-paired-end-sequences/barcodes.fastq.gz" \
   "https://data.qiime2.org/2020.11/tutorials/atacama-soils/10p/barcodes.fastq.gz"
+
 #切换到上层文件夹
  wd=/home/liancai/amplicon
  cd $wd
