@@ -1,0 +1,31 @@
+元数据(举例)：
+    sample-id	barcode-sequence	body-site	year	month	day	
+    #q2:types	categorical	categorical	numeric	numeric	numeric	
+    L1S8	AGCTGACTAGTC	gut	2008	10	28	
+拆分样本：根据barcode把基因匹配到样本。得到每个样本有多少序列，教程中有去掉序列少的样本，实际情况中不可以随意去除样本
+质控、去噪后，得到特征表和特征序列表
+特征表：
+    table summary：样本量、微生物量、序列总数
+！！！主要看第二个交互式样本细节（interactive sample detail）确定抽平的参数（尽量保证保留尽可能多的样本）
+
+observed_otus_vector.qza: Alpha多样性observed otus指数。 
+shannon_vector.qza: Alpha多样性香农指数。 
+evenness_vector.qza: Alpha多样性均匀度指数。 
+faith_pd_vector.qza: Alpha多样性考虑进化的faith指数考虑了物种在进化树上的距离（进化差异越大，值越高）。
+
+ jaccard_distance_matrix.qza: jaccard距离矩阵。（只看有没有，假如样本均包含某个菌，那么样本相同）
+bray_curtis_distance_matrix.qza: Bray-Curtis距离矩阵。 （有没有+数量）
+unweighted_unifrac_distance_matrix.qza: 无权重unifrac距离矩阵。（只看在进化角度上像不像） 
+weighted_unifrac_distance_matrix.qza: 有权重的unifrac距离矩阵。 （在进化角度上相似性+数量）
+
+jaccard_pcoa_results.qza: jaccard距离PCoA结果。
+bray_curtis_pcoa_results.qza: 基于Bray-Curtis距离PCoA的结果。 
+unweighted_unifrac_pcoa_results.qza: 无权重的unifrac距离的PCoA结果。
+weighted_unifrac_pcoa_results.qza: 基于有权重的unifrac距离的PCoA结果。 
+
+jaccard_emperor.qzv：jaccard距离PCoA结果采用emperor可视化。
+bray_curtis_emperor.qzv： Bray-Curtis距离PCoA结果采用emperor可视化。
+unweighted_unifrac_emperor.qzv：无权重的unifrac距离PCoA结果采用emperor可视化。
+weighted_unifrac_emperor.qzv： 有权重的unifrac距离PCoA结果采用emperor可视化。
+
+rarefied_table.qza: 等量重采样后的特征表。 
