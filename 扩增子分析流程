@@ -1,13 +1,13 @@
-元数据(举例)：
+1.元数据(举例)：
     sample-id	barcode-sequence	body-site	year	month	day	
     #q2:types	categorical	categorical	numeric	numeric	numeric	
     L1S8	AGCTGACTAGTC	gut	2008	10	28	
-拆分样本：根据barcode把基因匹配到样本。得到每个样本有多少序列，教程中有去掉序列少的样本，实际情况中不可以随意去除样本
-质控、去噪后，得到特征表和特征序列表
-特征表：
+2. 拆分样本：根据barcode把基因匹配到样本。得到每个样本有多少序列，教程中有去掉序列少的样本，实际情况中不可以随意去除样本
+3.质控、去噪后，
+4.查看统计结果！！！主要看第二个交互式样本细节（interactive sample detail）确定抽平的参数（尽量保证保留尽可能多的样本），得到特征表和特征序列表
+5.特征表：（可以通过改变文件的方式得到otu
     table summary：样本量、微生物量、序列总数
-！！！主要看第二个交互式样本细节（interactive sample detail）确定抽平的参数（尽量保证保留尽可能多的样本）
-
+6.构建进化树并进行多样性分析
 observed_otus_vector.qza: Alpha多样性observed otus指数。 
 shannon_vector.qza: Alpha多样性香农指数。 
 evenness_vector.qza: Alpha多样性均匀度指数。 
@@ -27,5 +27,7 @@ jaccard_emperor.qzv：jaccard距离PCoA结果采用emperor可视化。
 bray_curtis_emperor.qzv： Bray-Curtis距离PCoA结果采用emperor可视化。
 unweighted_unifrac_emperor.qzv：无权重的unifrac距离PCoA结果采用emperor可视化。
 weighted_unifrac_emperor.qzv： 有权重的unifrac距离PCoA结果采用emperor可视化。
-
-rarefied_table.qza: 等量重采样后的特征表。 
+7.物种稀释曲线
+8.使用ANCOM差异丰度分析（要求样本间变化小，小于25%）
+公众号搜：你想要的宏基因组-微生物组知识全在这(2021.9)
+9.差异丰度分析 ：balance 大热图
