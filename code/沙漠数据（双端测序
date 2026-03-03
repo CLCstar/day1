@@ -18,16 +18,97 @@ wget -c \
 wget -c \
   -O "emp-paired-end-sequences/barcodes.fastq.gz" \
   "https://data.qiime2.org/2020.11/tutorials/atacama-soils/10p/barcodes.fastq.gz"
-
-#切换到上层文件夹
- wd=/home/liancai/amplicon
- cd $wd
- time qiime feature-classifier classify-sklearn \
-  --i-classifier ~/greengenes2-2024.09-515-806-nb-classifier.qza \
+#导入数据
+time qiime tools import \
+  --type EMPPairedEndSequences \
+  --input-path emp-paired-end-sequences \
+  --output-path emp-paired-end-sequences.qza
+#样品拆分（此步根据交互式图查看质量，从而进行下一步的去噪、质控分析）
+time qiime demux emp-single \
+  --i-seqs emp-single-end-sequences.qza \
+  --m-barcodes-file sample-metadata.tsv \
+  --m-barcodes-column barcode-sequence \
+  --o-per-sample-sequences demux.qza \
+  --o-error-correction-details demux-details.qza
+#双端序列质控、去噪
+time qiime dada2 denoise-paired \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left-f 13 \
+  --p-trim-left-r 13 \
+  --p-trunc-len-f 150 \
+  --p-trunc-len-r 150 \
+  --o-table table.qza \
+  --o-representative-sequences rep-seqs.qza \
+  --o-denoising-stats denoising-stats.qza
+#单端数据质控、去噪
+time qiime dada2 denoise-single \
+  --i-demultiplexed-seqs demux.qza \
+  --p-trim-left 0 \
+  --p-trunc-len 120 \
+  --o-representative-sequences rep-seqs-dada2.qza \
+  --o-table table-dada2.qza \
+  --o-denoising-stats stats-dada2.qza
+#质控结果可视化（table解压缩一下就是otu表格）
+qiime feature-table summarize \
+  --i-table table.qza \
+  --o-visualization table.qzv \
+  --m-sample-metadata-file sample-metadata.tsv
+qiime feature-table tabulate-seqs \
+  --i-data rep-seqs.qza \
+  --o-visualization rep-seqs.qzv
+qiime metadata tabulate \
+  --m-input-file denoising-stats.qza \
+  --o-visualization denoising-stats.qzv
+#构建进化树并进行多样性分析
+time qiime phylogeny align-to-tree-mafft-fasttree \
+  --i-sequences rep-seqs.qza \
+  --o-alignment aligned-rep-seqs.qza \
+  --o-masked-alignment masked-aligned-rep-seqs.qza \
+  --o-tree unrooted-tree.qza \
+  --o-rooted-tree rooted-tree.qza
+#Alpha和Beta多样性分析（注意要根据特征表的可视化结果来抽平）
+time qiime diversity core-metrics-phylogenetic \
+  --i-phylogeny rooted-tree.qza \
+  --i-table table.qza \
+  --p-sampling-depth 1103 \
+  --m-metadata-file sample-metadata.tsv \
+  --output-dir core-metrics-results
+#得到的一些多样性结果：
+observed_otus_vector.qza: Alpha多样性observed otus指数。 
+shannon_vector.qza: Alpha多样性香农指数。 
+evenness_vector.qza: Alpha多样性均匀度指数。 
+faith_pd_vector.qza: Alpha多样性考虑进化的faith指数考虑了物种在进化树上的距离（进化差异越大，值越高）。
+jaccard_distance_matrix.qza: jaccard距离矩阵。（只看有没有，假如样本均包含某个菌，那么样本相同）
+bray_curtis_distance_matrix.qza: Bray-Curtis距离矩阵。 （有没有+数量）
+unweighted_unifrac_distance_matrix.qza: 无权重unifrac距离矩阵。（只看在进化角度上像不像） 
+weighted_unifrac_distance_matrix.qza: 有权重的unifrac距离矩阵。 （在进化角度上相似性+数量）
+jaccard_pcoa_results.qza: jaccard距离PCoA结果。
+bray_curtis_pcoa_results.qza: 基于Bray-Curtis距离PCoA的结果。 
+unweighted_unifrac_pcoa_results.qza: 无权重的unifrac距离的PCoA结果。
+weighted_unifrac_pcoa_results.qza: 基于有权重的unifrac距离的PCoA结果。 
+jaccard_emperor.qzv：jaccard距离PCoA结果采用emperor可视化。
+bray_curtis_emperor.qzv： Bray-Curtis距离PCoA结果采用emperor可视化。
+unweighted_unifrac_emperor.qzv：无权重的unifrac距离PCoA结果采用emperor可视化。
+weighted_unifrac_emperor.qzv： 有权重的unifrac距离PCoA结果采用emperor可视化。
+#Alpha稀疏曲线
+time qiime diversity alpha-rarefaction \
+  --i-table table.qza \
+  --i-phylogeny rooted-tree.qza \
+  --p-max-depth 4000 \
+  --m-metadata-file sample-metadata.tsv \
+  --o-visualization alpha-rarefaction.qzv
+#物种注释与可视化
+time qiime feature-classifier classify-sklearn \
+  --i-classifier gg-13-8-99-515-806-nb-classifier.qza \
   --i-reads rep-seqs.qza \
   --o-classification taxonomy.qza
 
 qiime metadata tabulate \
   --m-input-file taxonomy.qza \
   --o-visualization taxonomy.qzv
-
+#物种组成堆积条形图
+qiime taxa barplot \
+  --i-table table.qza \
+  --i-taxonomy taxonomy.qza \
+  --m-metadata-file sample-metadata.tsv \
+  --o-visualization taxa-bar-plots.qzv
